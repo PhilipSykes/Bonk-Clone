@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ControlScript : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D myRigidBody;
 
-    private float acceleration = 5f;
+    private float acceleration = 0.5f;
+    public float lift = 1f;
     private float topSpeed = 10f;
-    
-    public float currentSpeed = 0f;
+
+    private bool onGround = false;
     
     // Start is called before the first frame update
     void Start()
@@ -18,19 +21,20 @@ public class ControlScript : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) && myRigidBody.velocity.x > -topSpeed)
         {
-            if (currentSpeed < topSpeed)
-            {
-                currentSpeed += acceleration * Time.deltaTime;
-            }
-            myRigidBody.velocity = (Vector3.left * currentSpeed * Time.deltaTime);
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x-acceleration, myRigidBody.velocity.y);
         }
-        else
+        else if (Input.GetKey(KeyCode.RightArrow) && myRigidBody.velocity.x < topSpeed)
         {
-            currentSpeed = 0f;
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x + acceleration, myRigidBody.velocity.y);
+        }
+        
+        if (Input.GetKey(KeyCode.UpArrow) && onGround)
+        {
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, lift);
         }
     }
 }
