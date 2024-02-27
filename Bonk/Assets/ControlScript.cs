@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -9,7 +10,7 @@ public class ControlScript : MonoBehaviour
     [SerializeField] private Rigidbody2D myRigidBody;
 
     private float acceleration = 0.5f;
-    public float lift = 1f;
+    private float lift = 10f;
     private float topSpeed = 10f;
 
     private bool onGround = false;
@@ -32,9 +33,26 @@ public class ControlScript : MonoBehaviour
             myRigidBody.velocity = new Vector2(myRigidBody.velocity.x + acceleration, myRigidBody.velocity.y);
         }
         
-        if (Input.GetKey(KeyCode.UpArrow) && onGround)
+        if (Input.GetKey(KeyCode.UpArrow) && myRigidBody.velocity.y < 0)
+        {
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, myRigidBody.velocity.y * 0.9f);
+        }
+        else if (Input.GetKey(KeyCode.DownArrow) && !onGround)
+        {
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, myRigidBody.velocity.y - 0.2f);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow) && onGround)
         {
             myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, lift);
         }
+    }
+
+    public void SetOnGround(bool x)
+    {
+        onGround = x;
     }
 }
